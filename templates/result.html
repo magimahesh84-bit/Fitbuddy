@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Your personalized AI-generated workout plan - FitBuddy">
+    <title>Your Workout Plan – FitBuddy</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="/" class="navbar-brand">FitBuddy <span>AI</span></a>
+        <ul class="navbar-links">
+            <li><a href="/">🏠 Home</a></li>
+            <li><a href="/docs" target="_blank">📄 API Docs</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+
+        <!-- Error Alert -->
+        {% if error %}
+        <div class="alert alert-error animate-in">
+            ⚠️ {{ error }}
+        </div>
+        {% endif %}
+
+        {% if user %}
+        <!-- Page Header -->
+        <div class="page-header animate-in">
+            <h1>💪 Your Workout Plan</h1>
+            <p>Here's your personalized 7-day workout plan, {{ user.name }}!</p>
+        </div>
+
+        <!-- User Summary Cards -->
+        <div class="user-summary animate-in">
+            <div class="summary-item">
+                <div class="label">Name</div>
+                <div class="value">{{ user.name }}</div>
+            </div>
+            <div class="summary-item">
+                <div class="label">User ID</div>
+                <div class="value">{{ user.user_id }}</div>
+            </div>
+            <div class="summary-item">
+                <div class="label">Age</div>
+                <div class="value">{{ user.age }} yrs</div>
+            </div>
+            <div class="summary-item">
+                <div class="label">Weight</div>
+                <div class="value">{{ user.weight }} kg</div>
+            </div>
+            <div class="summary-item">
+                <div class="label">Goal</div>
+                <div class="value">{{ user.goal }}</div>
+            </div>
+            <div class="summary-item">
+                <div class="label">Intensity</div>
+                <div class="value">{{ user.intensity }}</div>
+            </div>
+        </div>
+
+        <!-- Nutrition Tip -->
+        {% if nutrition_tip %}
+        <div class="nutrition-card animate-in">
+            <h3>🥗 Nutrition & Recovery Tip</h3>
+            <p>{{ nutrition_tip }}</p>
+        </div>
+        {% endif %}
+
+        <!-- Original Workout Plan -->
+        <div class="plan-section animate-in">
+            <h2>📋 Your 7-Day Workout Plan</h2>
+            <div class="plan-content">{{ workout_plan }}</div>
+        </div>
+
+        <!-- Updated Plan (shown after feedback) -->
+        {% if updated_plan %}
+        <div class="section-divider"></div>
+
+        <div class="plan-section updated-plan-section animate-in">
+            <h2>🔄 Updated Workout Plan</h2>
+            {% if user.feedback %}
+            <div class="alert alert-info" style="margin-bottom: 1rem;">
+                💬 <strong>Your feedback:</strong> "{{ user.feedback }}"
+            </div>
+            {% endif %}
+            <div class="plan-content">{{ updated_plan }}</div>
+        </div>
+        {% endif %}
+
+        <!-- Feedback Success Message -->
+        {% if feedback_submitted %}
+        <div class="alert alert-success animate-in" style="margin-top: 1.5rem;">
+            ✅ Your plan has been updated based on your feedback!
+        </div>
+        {% endif %}
+
+        <!-- Feedback Form -->
+        <div class="feedback-section animate-in">
+            <div class="card">
+                <div class="card-title">
+                    <span class="icon">💬</span>
+                    Customize Your Plan
+                </div>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">
+                    Want changes? Describe what you'd like to modify and we'll update your plan.
+                </p>
+
+                <form action="/submit-feedback" method="POST" id="feedbackForm">
+                    <input type="hidden" name="user_id" value="{{ user.user_id }}">
+
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label for="feedback">Your Feedback</label>
+                        <textarea id="feedback" name="feedback" rows="3"
+                                  placeholder="e.g. Add more cardio, include yoga, make workouts easier..."
+                                  required minlength="5" maxlength="1000"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-secondary" id="feedbackBtn">
+                        <span class="spinner" id="feedbackSpinner"></span>
+                        🔄 Update My Plan
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Disclaimer -->
+        <div class="disclaimer animate-in">
+            ⚕️ <strong>Disclaimer:</strong> This workout plan and nutrition tips are AI-generated 
+            for informational purposes only. They do not constitute medical advice. 
+            Please consult a healthcare professional or certified trainer before starting 
+            any new fitness or nutrition program.
+        </div>
+
+        {% else %}
+        <!-- No user found state -->
+        <div class="empty-state">
+            <div class="icon">🔍</div>
+            <p>No workout plan found. <a href="/" style="color: var(--accent-primary);">Generate one now!</a></p>
+        </div>
+        {% endif %}
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>FitBuddy AI &copy; 2026 — College Project | Built with FastAPI + Google Gemini</p>
+        </footer>
+    </div>
+
+    <script>
+        // Prevent duplicate feedback submissions and show loading state
+        let feedbackSubmitting = false;
+        const feedbackForm = document.getElementById('feedbackForm');
+        if (feedbackForm) {
+            feedbackForm.addEventListener('submit', function(e) {
+                if (feedbackSubmitting) {
+                    e.preventDefault();
+                    return false;
+                }
+                feedbackSubmitting = true;
+                const btn = document.getElementById('feedbackBtn');
+                btn.classList.add('btn-loading');
+                btn.innerHTML = '<span class="spinner" style="display:inline-block;"></span> Updating your plan...';
+            });
+        }
+    </script>
+
+</body>
+</html>

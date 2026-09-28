@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="FitBuddy - AI-powered personalized fitness plan generator using Google Gemini">
+    <title>FitBuddy – AI Fitness Plan Generator</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="/" class="navbar-brand">FitBuddy <span>AI</span></a>
+        <ul class="navbar-links">
+            <li><a href="/">🏠 Home</a></li>
+            <li><a href="/docs" target="_blank">📄 API Docs</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+
+        <!-- Hero Section -->
+        <section class="hero animate-in">
+            <div class="hero-badge">🤖 Powered by Google Gemini</div>
+            <h1>Your Personal <span class="gradient-text">AI Fitness</span> Coach</h1>
+            <p>Enter your details and let AI generate a customized 7-day workout plan with nutrition tips tailored just for you.</p>
+        </section>
+
+        <!-- Error Alert -->
+        {% if error %}
+        <div class="alert alert-error animate-in">
+            ⚠️ {{ error }}
+        </div>
+        {% endif %}
+
+        <!-- Input Form -->
+        <div class="card animate-in">
+            <div class="card-title">
+                <span class="icon">🏋️</span>
+                Generate Your Workout Plan
+            </div>
+
+            <form action="/generate-workout" method="POST" id="workoutForm">
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" name="name" 
+                               placeholder="e.g. Abdul Khan" required
+                               minlength="1" maxlength="100">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="user_id">User ID</label>
+                        <input type="text" id="user_id" name="user_id" 
+                               placeholder="e.g. abdul123" required
+                               minlength="1" maxlength="50">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="age">Age</label>
+                        <input type="number" id="age" name="age" 
+                               placeholder="e.g. 22" required
+                               min="10" max="100">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="weight">Weight (kg)</label>
+                        <input type="number" id="weight" name="weight" 
+                               placeholder="e.g. 70" required
+                               min="20" max="300" step="0.1">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="goal">Fitness Goal</label>
+                        <select id="goal" name="goal" required>
+                            <option value="" disabled selected>Select your goal</option>
+                            {% for g in goals %}
+                            <option value="{{ g }}">{{ g }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="intensity">Workout Intensity</label>
+                        <select id="intensity" name="intensity" required>
+                            <option value="" disabled selected>Select intensity</option>
+                            {% for i in intensities %}
+                            <option value="{{ i }}">{{ i }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <button type="submit" class="btn btn-primary btn-block" id="submitBtn">
+                            <span class="spinner" id="spinner"></span>
+                            🚀 Generate My Workout Plan
+                        </button>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>FitBuddy AI &copy; 2026 — College Project | Built with FastAPI + Google Gemini</p>
+        </footer>
+    </div>
+
+    <script>
+        // Prevent duplicate form submissions and show loading state
+        let workoutSubmitted = false;
+        document.getElementById('workoutForm').addEventListener('submit', function(e) {
+            if (workoutSubmitted) {
+                e.preventDefault();
+                return false;
+            }
+            workoutSubmitted = true;
+            const btn = document.getElementById('submitBtn');
+            btn.classList.add('btn-loading');
+            btn.innerHTML = '<span class="spinner" style="display:inline-block;"></span> Generating your plan...';
+        });
+    </script>
+
+</body>
+</html>
